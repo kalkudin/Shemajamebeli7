@@ -1,6 +1,6 @@
 package com.example.presentation.home.model
 
-data class DotBelowThePasscode(
+data class Dot(
     val id: Int,
     val imagePath: Int,
 )

@@ -10,8 +10,8 @@ import com.example.presentation.home.model.Key
 import com.example.shemajamebeli7.R
 import com.example.shemajamebeli7.databinding.KeyLayoutBinding
 
-class HomeKeyRecyclerAdapter(private val itemClickListener: (Key) -> Unit) :
-    ListAdapter<Key, HomeKeyRecyclerAdapter.KeyViewHolder>(KeyDiffCallback()) {
+class KeysRecyclerAdapter(private val itemClickListener: (Key) -> Unit) :
+    ListAdapter<Key, KeysRecyclerAdapter.KeyViewHolder>(KeyDiffCallback()) {
 
     inner class KeyViewHolder(private val binding: KeyLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {

@@ -1,6 +1,5 @@
 package com.example.presentation.home
 
-import android.util.Log.d
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -10,8 +9,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.common.BaseFragment
 import com.example.data.common.Resource
-import com.example.presentation.home.adapters.DotsBelowPasscodeRecyclerAdapter
-import com.example.presentation.home.adapters.HomeKeyRecyclerAdapter
+import com.example.presentation.home.adapters.DotsRecyclerAdapter
+import com.example.presentation.home.adapters.KeysRecyclerAdapter
 import com.example.presentation.home.events.HomeKeyClickEvent
 import com.example.presentation.home.model.Key
 import com.example.shemajamebeli7.databinding.FragmentHomeBinding
@@ -23,9 +22,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private val homeViewModel: HomeViewModel by viewModels()
 
-    private val dotsAdapter = DotsBelowPasscodeRecyclerAdapter()
+    private val dotsAdapter = DotsRecyclerAdapter()
 
-    private val keyAdapter = HomeKeyRecyclerAdapter { item ->
+    private val keyAdapter = KeysRecyclerAdapter { item ->
         handleItemClick(item)
     }
 

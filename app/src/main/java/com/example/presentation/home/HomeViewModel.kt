@@ -8,10 +8,11 @@ import com.example.domain.datastore.repository.UserDataStoreRepository
 import com.example.domain.home.model.DataObject
 import com.example.domain.home.repository.RecyclerDataRepository
 import com.example.presentation.home.events.HomeKeyClickEvent
-import com.example.presentation.home.model.DotBelowThePasscode
+import com.example.presentation.home.model.Dot
 import com.example.presentation.home.model.Key
 import com.example.shemajamebeli7.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,16 +31,16 @@ class HomeViewModel @Inject constructor(
     private val _successFlow = MutableStateFlow<Resource>(Resource.Nothing)
     val successFlow : StateFlow<Resource> = _successFlow.asStateFlow()
 
-    private val _filledKeysFlow = MutableStateFlow<List<DotBelowThePasscode>>(emptyList())
-    val filledKeysFlow : StateFlow<List<DotBelowThePasscode>> = _filledKeysFlow.asStateFlow()
+    private val _filledKeysFlow = MutableStateFlow<List<Dot>>(emptyList())
+    val filledKeysFlow : StateFlow<List<Dot>> = _filledKeysFlow.asStateFlow()
 
     private val passwordKeys = mutableListOf<String>()
 
-    private val listOfFilledKeys = mutableListOf(
-        DotBelowThePasscode(id = 1, imagePath = R.drawable.ic_grey_circle),
-        DotBelowThePasscode(id = 2, imagePath = R.drawable.ic_grey_circle),
-        DotBelowThePasscode(id = 3, imagePath = R.drawable.ic_grey_circle),
-        DotBelowThePasscode(id = 4, imagePath = R.drawable.ic_grey_circle),
+    private val listOfDots = mutableListOf(
+        Dot(id = 1, imagePath = R.drawable.ic_grey_circle),
+        Dot(id = 2, imagePath = R.drawable.ic_grey_circle),
+        Dot(id = 3, imagePath = R.drawable.ic_grey_circle),
+        Dot(id = 4, imagePath = R.drawable.ic_grey_circle),
     )
 
     init {
@@ -116,8 +117,11 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun clearPassword() {
-        _filledKeysFlow.value = listOfFilledKeys
-        passwordKeys.clear()
+        viewModelScope.launch(){
+            delay(150)
+            _filledKeysFlow.value = listOfDots
+            passwordKeys.clear()
+        }
     }
 
     private fun resetFlowValue(){
@@ -128,7 +132,7 @@ class HomeViewModel @Inject constructor(
 
     private fun initializeSmallDots(){
         viewModelScope.launch {
-            _filledKeysFlow.value = listOfFilledKeys
+            _filledKeysFlow.value = listOfDots
         }
     }
     //the only issue here is that i am creating and submitting a new list every time a i want to submit a list. I don't know what else to do
