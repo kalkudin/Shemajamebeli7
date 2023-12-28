@@ -1,14 +1,17 @@
 package com.example.presentation.home
 
 import android.util.Log
+import android.util.Log.d
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.common.Resource
 import com.example.domain.datastore.repository.UserDataStoreRepository
 import com.example.domain.home.model.DataObject
 import com.example.domain.home.repository.RecyclerDataRepository
-import com.example.presentation.home.model.HomeKeyClickEvent
+import com.example.presentation.home.events.HomeKeyClickEvent
+import com.example.presentation.home.model.DotBelowThePasscode
 import com.example.presentation.home.model.Key
+import com.example.shemajamebeli7.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,11 +31,22 @@ class HomeViewModel @Inject constructor(
     private val _successFlow = MutableStateFlow<Resource>(Resource.Nothing)
     val successFlow : StateFlow<Resource> = _successFlow.asStateFlow()
 
+    private val _filledKeysFlow = MutableStateFlow<List<DotBelowThePasscode>>(emptyList())
+    val filledKeysFlow : StateFlow<List<DotBelowThePasscode>> = _filledKeysFlow.asStateFlow()
+
     private val passwordKeys = mutableListOf<String>()
+
+    private val listOfFilledKeys = mutableListOf(
+        DotBelowThePasscode(id = 1, imagePath = R.drawable.ic_grey_circle),
+        DotBelowThePasscode(id = 2, imagePath = R.drawable.ic_grey_circle),
+        DotBelowThePasscode(id = 3, imagePath = R.drawable.ic_grey_circle),
+        DotBelowThePasscode(id = 4, imagePath = R.drawable.ic_grey_circle),
+    )
 
     init {
         getData()
         savePasswordToDataStore()
+        initializeSmallDots()
     }
 
     fun onEvent(event : HomeKeyClickEvent){
@@ -67,6 +81,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             if (passwordKeys.size < 4) {
                 passwordKeys.add(number)
+                updateFilledKeys()
                 if (passwordKeys.size == 4) {
                     checkPassword()
                 }
@@ -88,9 +103,9 @@ class HomeViewModel @Inject constructor(
     private fun removeLastKey(){
         viewModelScope.launch {
             if (passwordKeys.isNotEmpty()) {
-                Log.d("HomeViewModel", "password before removal : ${passwordKeys.joinToString("")}")
+                d("HomeViewModel", "password before removal : ${passwordKeys.joinToString("")}")
                 passwordKeys.removeAt(passwordKeys.size - 1)
-                Log.d("HomeViewModel", "password after removal : ${passwordKeys.joinToString("")}")
+                d("HomeViewModel", "password after removal : ${passwordKeys.joinToString("")}")
             }
         }
     }
@@ -102,12 +117,32 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun clearPassword() {
+        _filledKeysFlow.value = listOfFilledKeys
         passwordKeys.clear()
     }
 
     private fun resetFlowValue(){
         viewModelScope.launch(){
             _successFlow.value = Resource.Nothing
+        }
+    }
+
+    private fun initializeSmallDots(){
+        viewModelScope.launch {
+            _filledKeysFlow.value = listOfFilledKeys
+        }
+    }
+
+    private fun updateFilledKeys() {
+        val currentPasswordLength = passwordKeys.size
+        val updatedList = _filledKeysFlow.value.toMutableList()
+
+        if (currentPasswordLength <= updatedList.size) {
+            updatedList[currentPasswordLength - 1] =
+                updatedList[currentPasswordLength - 1].copy(imagePath = R.drawable.ic_green_circle)
+
+            _filledKeysFlow.value = updatedList
+            d("HomeViewModel", "_filledKeysFlow values: ${_filledKeysFlow.value}")
         }
     }
 

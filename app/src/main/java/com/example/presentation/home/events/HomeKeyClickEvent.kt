@@ -1,4 +1,4 @@
-package com.example.presentation.home.model
+package com.example.presentation.home.events
 
 sealed class HomeKeyClickEvent {
     data class AddKeyToPassword(val number : Int) : HomeKeyClickEvent()
