@@ -1,7 +1,7 @@
 package com.example.di
 
-import com.example.data.home.RecyclerDataRepositoryImpl
-import com.example.domain.home.RecyclerDataRepository
+import com.example.data.home.repositoryimpl.RecyclerDataRepositoryImpl
+import com.example.domain.home.repository.RecyclerDataRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,4 +1,4 @@
-package com.example.domain.home
+package com.example.domain.home.repository
 
 import com.example.domain.home.model.DataObject
 import kotlinx.coroutines.flow.Flow

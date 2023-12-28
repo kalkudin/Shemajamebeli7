@@ -10,17 +10,27 @@ import com.example.presentation.home.model.Key
 import com.example.shemajamebeli7.R
 import com.example.shemajamebeli7.databinding.KeyLayoutBinding
 
-class HomeKeyRecyclerAdapter :
+class HomeKeyRecyclerAdapter(private val itemClickListener: (Key) -> Unit) :
     ListAdapter<Key, HomeKeyRecyclerAdapter.KeyViewHolder>(KeyDiffCallback()) {
 
-    class KeyViewHolder(private val binding: KeyLayoutBinding) :
+    inner class KeyViewHolder(private val binding: KeyLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Key) {
-            binding.number.text = item.number?.toString() ?: ""
-            binding.icon.setImageResource(item.icon ?: R.drawable.ic_default_icon)
-            binding.icon.visibility = if (item.itemType.ordinal == Key.ItemType.IMAGE.ordinal) View.VISIBLE else View.GONE
-            binding.number.visibility = if (item.itemType.ordinal == Key.ItemType.NUMBER.ordinal) View.VISIBLE else View.GONE
+            with(binding){
+                number.text = item.number?.toString() ?: ""
+                icon.setImageResource(item.icon ?: R.drawable.ic_default_icon)
+                icon.visibility = if (item.itemType == Key.ItemType.IMAGE) View.VISIBLE else View.GONE
+                number.visibility = if (item.itemType == Key.ItemType.NUMBER) View.VISIBLE else View.GONE
+
+                root.setOnClickListener {
+                    val position= adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        val key = getItem(position)
+                        itemClickListener.invoke(key)
+                    }
+                }
+            }
         }
     }
 

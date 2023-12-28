@@ -9,7 +9,7 @@ data class Key(
         else -> throw IllegalArgumentException("Both number and iconPath cannot be null")
     },
 
-    val itemFunctionality : ItemFunction,
+    val itemFunctionality : ItemFunction
 ){
     enum class ItemType {
         NUMBER,
