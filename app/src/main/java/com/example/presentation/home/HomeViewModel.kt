@@ -104,7 +104,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             if (passwordKeys.isNotEmpty()) {
                 d("HomeViewModel", "password before removal : ${passwordKeys.joinToString("")}")
-                passwordKeys.removeAt(passwordKeys.size - 1)
+
+                val indexToRemove = passwordKeys.size - 1
+
+                updateFilledKeyState(indexToRemove, false)
+
+                passwordKeys.removeAt(indexToRemove)
+
                 d("HomeViewModel", "password after removal : ${passwordKeys.joinToString("")}")
             }
         }
@@ -143,6 +149,22 @@ class HomeViewModel @Inject constructor(
 
             _filledKeysFlow.value = updatedList
             d("HomeViewModel", "_filledKeysFlow values: ${_filledKeysFlow.value}")
+        }
+    }
+
+    private fun updateFilledKeyState(index: Int, isFilled: Boolean) {
+        val updatedList = _filledKeysFlow.value.toMutableList()
+
+        // Ensure the index is within bounds
+        if (index < updatedList.size) {
+            // Update the imagePath property at the specified index
+            updatedList[index] = updatedList[index].copy(imagePath = if (isFilled) R.drawable.ic_green_circle else R.drawable.ic_grey_circle)
+
+            // Update the _filledKeysFlow
+            _filledKeysFlow.value = updatedList
+
+            // Log the values of _filledKeysFlow
+            Log.d("HomeViewModel", "_filledKeysFlow values: ${_filledKeysFlow.value}")
         }
     }
 
