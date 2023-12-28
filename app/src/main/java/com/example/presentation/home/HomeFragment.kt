@@ -23,26 +23,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
     private val homeViewModel: HomeViewModel by viewModels()
 
+    private val dotsAdapter = DotsBelowPasscodeRecyclerAdapter()
+
     private val keyAdapter = HomeKeyRecyclerAdapter { item ->
         handleItemClick(item)
     }
 
-    private val dotsAdapter = DotsBelowPasscodeRecyclerAdapter()
-
     override fun bind() {
-        binding.keyRecyclerView.apply {
-            layoutManager = GridLayoutManager(requireContext(), 3)
-            adapter = keyAdapter
-        }
-
-        binding.circlesBelowPasscodeRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = dotsAdapter
-        }
+        bindKeyRecyclerView()
+        bindCirclesBelowPasscodeRecyclerView()
     }
 
     override fun bindViewActionListeners() {
-        // Set up any click listeners or user interactions here if needed
     }
 
     override fun bindObservers() {
@@ -68,10 +60,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
-                homeViewModel.filledKeysFlow.collect{
+                homeViewModel.filledKeysFlow.collect{ it ->
                     dotsAdapter.submitList(it)
-                    val imagePathList = it.joinToString { it.imagePath.toString() }
-                    d("HomeFragment", "Filled keys list submitted to adapter: $imagePathList")
                 }
             }
         }
@@ -84,7 +74,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             }
             Key.ItemFunction.NONE -> {
                 homeViewModel.onEvent(event = HomeKeyClickEvent.AddKeyToPassword(number = item.number!!))
-
             }
             Key.ItemFunction.DELETE -> {
                 homeViewModel.onEvent(event = HomeKeyClickEvent.DeletePasswordKey)
@@ -92,7 +81,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         }
     }
 
-    private fun doNothing(){
+    private fun bindKeyRecyclerView() {
+        binding.keyRecyclerView.apply {
+            layoutManager = GridLayoutManager(requireContext(), 3)
+            adapter = keyAdapter
+        }
+    }
+
+    private fun bindCirclesBelowPasscodeRecyclerView() {
+        binding.circlesBelowPasscodeRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            adapter = dotsAdapter
+        }
+    }
+
+    private fun doNothing() {
 
     }
 }

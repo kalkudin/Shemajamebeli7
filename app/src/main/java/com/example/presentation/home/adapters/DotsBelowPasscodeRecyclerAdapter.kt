@@ -14,7 +14,11 @@ class DotsBelowPasscodeRecyclerAdapter :
     ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CircleViewHolder {
-        val binding = ProgressSmallCircleLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ProgressSmallCircleLayoutBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
         return CircleViewHolder(binding)
     }
 
@@ -35,7 +39,7 @@ class DotsBelowPasscodeRecyclerAdapter :
             oldItem: DotBelowThePasscode,
             newItem: DotBelowThePasscode
         ): Boolean {
-            return oldItem.imagePath == newItem.imagePath
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(

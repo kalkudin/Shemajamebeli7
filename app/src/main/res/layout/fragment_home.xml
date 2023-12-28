@@ -76,6 +76,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/circles_below_passcode_recycler_view"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        android:layout_gravity="center_horizontal"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

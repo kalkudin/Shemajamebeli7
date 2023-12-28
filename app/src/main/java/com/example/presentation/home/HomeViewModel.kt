@@ -1,6 +1,5 @@
 package com.example.presentation.home
 
-import android.util.Log
 import android.util.Log.d
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -81,7 +80,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             if (passwordKeys.size < 4) {
                 passwordKeys.add(number)
-                updateFilledKeys()
+                updateFilledKeys(DotEvent.AddGreenDot)
                 if (passwordKeys.size == 4) {
                     checkPassword()
                 }
@@ -104,14 +103,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             if (passwordKeys.isNotEmpty()) {
                 d("HomeViewModel", "password before removal : ${passwordKeys.joinToString("")}")
-
-                val indexToRemove = passwordKeys.size - 1
-
-                updateFilledKeyState(indexToRemove, false)
-
-                passwordKeys.removeAt(indexToRemove)
-
-                d("HomeViewModel", "password after removal : ${passwordKeys.joinToString("")}")
+                updateFilledKeys(DotEvent.RemoveGreenDot)
+                passwordKeys.takeIf { it.isNotEmpty() }?.removeAt(passwordKeys.size - 1)
             }
         }
     }
@@ -138,34 +131,31 @@ class HomeViewModel @Inject constructor(
             _filledKeysFlow.value = listOfFilledKeys
         }
     }
-
-    private fun updateFilledKeys() {
-        val currentPasswordLength = passwordKeys.size
+    //the only issue here is that i am creating and submitting a new list every time a i want to submit a list. I don't know what else to do
+    private fun updateFilledKeys(dotEvent: DotEvent) {
         val updatedList = _filledKeysFlow.value.toMutableList()
 
-        if (currentPasswordLength <= updatedList.size) {
-            updatedList[currentPasswordLength - 1] =
-                updatedList[currentPasswordLength - 1].copy(imagePath = R.drawable.ic_green_circle)
-
-            _filledKeysFlow.value = updatedList
-            d("HomeViewModel", "_filledKeysFlow values: ${_filledKeysFlow.value}")
+        when (dotEvent) {
+            is DotEvent.AddGreenDot -> {
+                val currentPasswordLength = passwordKeys.size
+                if (currentPasswordLength <= updatedList.size) {
+                    updatedList[currentPasswordLength - 1] =
+                        updatedList[currentPasswordLength - 1].copy(imagePath = R.drawable.ic_green_circle)
+                }
+            }
+            is DotEvent.RemoveGreenDot -> {
+                if (passwordKeys.isNotEmpty()) {
+                    val indexToRemove = passwordKeys.size - 1
+                    if (indexToRemove < updatedList.size) {
+                        updatedList[indexToRemove] =
+                            updatedList[indexToRemove].copy(imagePath = R.drawable.ic_grey_circle)
+                    }
+                }
+            }
         }
-    }
 
-    private fun updateFilledKeyState(index: Int, isFilled: Boolean) {
-        val updatedList = _filledKeysFlow.value.toMutableList()
-
-        // Ensure the index is within bounds
-        if (index < updatedList.size) {
-            // Update the imagePath property at the specified index
-            updatedList[index] = updatedList[index].copy(imagePath = if (isFilled) R.drawable.ic_green_circle else R.drawable.ic_grey_circle)
-
-            // Update the _filledKeysFlow
-            _filledKeysFlow.value = updatedList
-
-            // Log the values of _filledKeysFlow
-            Log.d("HomeViewModel", "_filledKeysFlow values: ${_filledKeysFlow.value}")
-        }
+        _filledKeysFlow.value = updatedList
+        d("HomeViewModel", "_filledKeysFlow values: ${_filledKeysFlow.value}")
     }
 
     object DataObjectToKeyMapper {
@@ -180,5 +170,10 @@ class HomeViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    sealed class DotEvent {
+        data object RemoveGreenDot : DotEvent()
+        data object AddGreenDot : DotEvent()
     }
 }
